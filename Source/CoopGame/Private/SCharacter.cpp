@@ -5,6 +5,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "SWeapon.h"
+#include "Components/CapsuleComponent.h"
+#include "CoopGame.h"
 // Sets default values
 ASCharacter::ASCharacter()
 {
@@ -16,9 +18,11 @@ ASCharacter::ASCharacter()
 	SpringArmComp->SetupAttachment(RootComponent);
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
-	CameraComp->SetupAttachment(SpringArmComp,NAME_None);
+	CameraComp->SetupAttachment(SpringArmComp, NAME_None);
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
 	ZoomedFOV = 50.f;
 	ZoomInterpSpeed = 20.f;

@@ -47,12 +47,13 @@ void ASWeapon::BeginPlay()
 
 void ASWeapon::Fire()
 {
-	CurrentBulletsNum--;
 
-	if (CurrentBulletsNum < 0)
+	if (CurrentBulletsNum <= 0)
 	{
 		return;
 	}
+	CurrentBulletsNum--;
+
 	OnBulletChanged();
 	//Trace the world, from pawn eyes to crosshair location
 	AActor* MyOwner = GetOwner();
