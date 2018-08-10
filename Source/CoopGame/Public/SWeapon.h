@@ -75,18 +75,18 @@ protected:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Weapon")
-	int TotalBulletsNum;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	int MagazineNum;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	int CurrentBulletsNum;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
-	void ReloadBullet();
-
-	UFUNCTION(BlueprintImplementableEvent,Category = "Weapon")
-	void OnBulletChanged();
+// 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Weapon")
+// 	int TotalBulletsNum;
+// 
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+// 	int MagazineNum;
+// 
+// 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+// 	int CurrentBulletsNum;
+// 
+// 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
+// 	void ReloadBullet();
+// 
+// 	UFUNCTION(BlueprintImplementableEvent,Category = "Weapon")
+// 	void OnBulletChanged();
 };

@@ -32,9 +32,9 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.f;
 	RateOfFire = 600.f;
 
-	TotalBulletsNum = 100;
-	MagazineNum = 30;
-	CurrentBulletsNum = MagazineNum;
+	//TotalBulletsNum = 100;
+	//MagazineNum = 30;
+	//CurrentBulletsNum = MagazineNum;
 }
 
 void ASWeapon::BeginPlay()
@@ -48,13 +48,14 @@ void ASWeapon::BeginPlay()
 void ASWeapon::Fire()
 {
 
-	if (CurrentBulletsNum <= 0)
-	{
-		return;
-	}
-	CurrentBulletsNum--;
+// 	if (CurrentBulletsNum <= 0)
+// 	{
+// 		return;
+// 	}
+// 	CurrentBulletsNum--;
 
-	OnBulletChanged();
+// 	OnBulletChanged();
+
 	//Trace the world, from pawn eyes to crosshair location
 	AActor* MyOwner = GetOwner();
 	if (MyOwner)
@@ -168,35 +169,35 @@ void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
 
 }
 
-void ASWeapon::ReloadBullet_Implementation()
-{
-	if (TotalBulletsNum > MagazineNum - CurrentBulletsNum)
-	{
-		TotalBulletsNum -= MagazineNum - CurrentBulletsNum;
-		CurrentBulletsNum = MagazineNum;
-	}
-	else
-	{
-		CurrentBulletsNum += TotalBulletsNum;
-		TotalBulletsNum = 0;
-
-	}		
-
-
-
-	OnBulletChanged();
-	//if (TotalBulletsNum < MagazineNum) 
-	//{
-	//	CurrentBulletsNum = TotalBulletsNum; 
-	//	TotalBulletsNum = 0;
-	//}
-	//else
-	//{
-	//	TotalBulletsNum -= MagazineNum;
-	//	CurrentBulletsNum = MagazineNum;
-	//}
-}
-
+// void ASWeapon::ReloadBullet_Implementation()
+// {
+// 	if (TotalBulletsNum > MagazineNum - CurrentBulletsNum)
+// 	{
+// 		TotalBulletsNum -= MagazineNum - CurrentBulletsNum;
+// 		CurrentBulletsNum = MagazineNum;
+// 	}
+// 	else
+// 	{
+// 		CurrentBulletsNum += TotalBulletsNum;
+// 		TotalBulletsNum = 0;
+// 
+// 	}		
+// 
+// 
+// 
+// 	OnBulletChanged();
+// 	//if (TotalBulletsNum < MagazineNum) 
+// 	//{
+// 	//	CurrentBulletsNum = TotalBulletsNum; 
+// 	//	TotalBulletsNum = 0;
+// 	//}
+// 	//else
+// 	//{
+// 	//	TotalBulletsNum -= MagazineNum;
+// 	//	CurrentBulletsNum = MagazineNum;
+// 	//}
+// }
+// 
 
 
 

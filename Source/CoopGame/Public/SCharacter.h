@@ -8,6 +8,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class ASWeapon;
+class USHealthComponent;
 UCLASS()
 class COOPGAME_API ASCharacter : public ACharacter
 {
@@ -61,12 +62,19 @@ protected:
 
 	ASWeapon* CurrentWeapon;
 
+	USHealthComponent* HealthComp;
+
 	void Fire();
 
 	void StartFire();
 
 	void StopFire();
 
+	UFUNCTION()
+	void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UPROPERTY(BlueprintReadOnly,Category = "Player")
+	bool bDied;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
