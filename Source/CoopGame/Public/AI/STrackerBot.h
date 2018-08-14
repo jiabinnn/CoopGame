@@ -58,6 +58,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float ExplosionDamage;
 
+	int32 PowerLevel;
+
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	bool bUseVelocityChange;
 
@@ -68,6 +70,9 @@ protected:
 	FTimerHandle TimerHandle_SelfDamage;
 
 	void DamageSelf();
+
+	void OnCheckNearbyBots();
+
 
 	bool bOverlaped;
 
