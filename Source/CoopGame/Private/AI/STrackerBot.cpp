@@ -10,7 +10,9 @@
 #include <Kismet/GameplayStatics.h>
 #include <DrawDebugHelpers.h>
 #include "Particles/ParticleSystem.h"
-
+#include "Components/SphereComponent.h"
+#include "SCharacter.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -26,11 +28,19 @@ ASTrackerBot::ASTrackerBot()
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
 
+	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	SphereComp->SetSphereRadius(200.f);
+	SphereComp->SetupAttachment(RootComponent);
+
 	MovementForce = 10;
 	RequiredDistanceToTarget = 100;
 	bUseVelocityChange = true;
 
-	ExplosionDamage = 100.f;
+	SelfDamageInterval = 0.25;
+	ExplosionDamage = 50.f;
 	ExplosionRadius = 200.f;
 }
 
@@ -47,10 +57,11 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float H
 	const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	//Explode on hitpoint = 0
-	if (Health <= 0&& ExplosionEffect)
+	if (Health <= 0)
 	{
 		SelfDestruct();
 
+		UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
 	}
 	//TODO: Pulse the material on hit
 
@@ -75,7 +86,7 @@ FVector ASTrackerBot::GetNextPathPoint()
 
 	UNavigationPath* NavPath = UNavigationSystem::FindPathToActorSynchronously(this, GetActorLocation(), PlayPawn);
 
-	if (NavPath->PathPoints.Num() > 1)
+	if (NavPath && NavPath->PathPoints.Num() > 1)
 	{
 		return NavPath->PathPoints[1];
 	}
@@ -92,8 +103,10 @@ void ASTrackerBot::SelfDestruct()
 	}
 	
 	bExploded = true;
-
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
+	if(ExplosionEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
+	}
 
 	TArray<AActor*>IgnoreActors;
 	IgnoreActors.Add(this);
@@ -106,6 +119,11 @@ void ASTrackerBot::SelfDestruct()
 	Destroy();
 }
 
+void ASTrackerBot::DamageSelf()
+{
+	UGameplayStatics::ApplyDamage(this, 20.f, GetInstigatorController(), this, nullptr);
+}
+
 // Called every frame
 void ASTrackerBot::Tick(float DeltaTime)
 {
@@ -115,6 +133,7 @@ void ASTrackerBot::Tick(float DeltaTime)
 
 	if (DistanceToTarget <= RequiredDistanceToTarget)
 	{
+		
 		NextPathPoint = GetNextPathPoint();
 
 		DrawDebugSphere(GetWorld(), NextPathPoint, 30.f, 12, FColor::Yellow, false, 0.f);
@@ -130,14 +149,19 @@ void ASTrackerBot::Tick(float DeltaTime)
 		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), NextPathPoint, 32, FColor::Black, false, 0.f, 2, 2.f);
 	}
 
-	ACharacter* PlayPawn = UGameplayStatics::GetPlayerCharacter(this, 0);
-	FVector PlayerLocation = PlayPawn->GetActorLocation();
-	float Distance = (PlayerLocation - GetActorLocation()).Size();
-	if (Distance <= 100)
+
+}
+
+void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	ASCharacter* MyPawn = Cast<ASCharacter>(OtherActor);
+	if (!bOverlaped && MyPawn)
 	{
-		SelfDestruct();
+		bOverlaped = true;
+		GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf,
+			SelfDamageInterval, true, 0.0f);
+	
+		UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 	}
-
-
 }
 

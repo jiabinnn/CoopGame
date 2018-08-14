@@ -52,7 +52,6 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, flo
 		OnRep_Exploded();
 	}
 
-
 }
 
 void ASExplosiveBarrel::OnRep_Exploded()
