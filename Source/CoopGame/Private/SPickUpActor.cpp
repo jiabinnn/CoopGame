@@ -17,13 +17,17 @@ ASPickUpActor::ASPickUpActor()
 	DecalComp->SetRelativeRotation(FRotator(90.f, 0.f, 0.f));
 	DecalComp->DecalSize = FVector(64.f, 75.f, 75.f);
 
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
 void ASPickUpActor::BeginPlay()
 {
 	Super::BeginPlay();
-	Respawn();
+	if(Role == ROLE_Authority)
+	{
+		Respawn();
+	}
 
 }
 
@@ -42,9 +46,9 @@ void ASPickUpActor::Respawn()
 
 void ASPickUpActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	if (PowerupInstance)
+	if (Role == ROLE_Authority && PowerupInstance)
 	{
-		PowerupInstance->ActivatePowerup();
+		PowerupInstance->ActivatePowerup(OtherActor);
 		PowerupInstance = nullptr;
 
 		//set timer to respawn
