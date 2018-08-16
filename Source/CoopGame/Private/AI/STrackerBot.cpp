@@ -40,7 +40,7 @@ ASTrackerBot::ASTrackerBot()
 	bUseVelocityChange = true;
 
 	SelfDamageInterval = 0.25;
-	ExplosionDamage = 50.f;
+	ExplosionDamage = 20.f;
 	ExplosionRadius = 200.f;
 }
 
