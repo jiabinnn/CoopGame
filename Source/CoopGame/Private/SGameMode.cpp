@@ -2,12 +2,15 @@
 
 #include "SGameMode.h"
 #include "SHealthComponent.h"
+#include "Public/SGameState.h"
 
 
 ASGameMode::ASGameMode()
 {
 	PrimaryActorTick.TickInterval = 1.f;
 	PrimaryActorTick.bCanEverTick = true;
+
+	GameStateClass = ASGameState::StaticClass();
 
 	TimeBetweenWaves = 2.f;
 
@@ -20,17 +23,21 @@ void ASGameMode::StartWave()
 	NumOfBotsToSpawn = 2 * WaveCount;
 
 	GetWorldTimerManager().SetTimer(TimerHandle_BotSpawner, this, &ASGameMode::SpawnBotTimerElapsed, 1.f, true, 0.f);
+	SetWaveState(EWaveState::WaveInProgress);
+
 }
 
 void ASGameMode::EndWave()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_BotSpawner);
-
+	SetWaveState(EWaveState::WaitingToComplete);
 }
 
 void ASGameMode::PrepareForNextWave()
 {
 	GetWorldTimerManager().SetTimer(TimerHandle_NextWaveStart, this, &ASGameMode::StartWave,TimeBetweenWaves, false);
+	SetWaveState(EWaveState::WaitingToStart);
+
 }
 
 
@@ -61,8 +68,47 @@ void ASGameMode::CheckWaveState()
 	if (!bIsAnyBotAlive)
 	{
 		PrepareForNextWave();
+		SetWaveState(EWaveState::WaveComplete);
 	}
 
+
+}
+
+void ASGameMode::CheckAnyPlayerAlive()
+{
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (PC && PC->GetPawn())
+		{
+			APawn* MyPawn = PC->GetPawn();
+			USHealthComponent* healthcomp = Cast<USHealthComponent>(MyPawn->GetComponentByClass(USHealthComponent::StaticClass()));
+			if (ensure(healthcomp) && healthcomp->GetHealth()>0)
+			{
+				//A player is still alive
+				return;
+			}
+		}
+	}
+	GameOver();
+}
+
+void ASGameMode::GameOver()
+{
+	EndWave();
+
+	UE_LOG(LogTemp, Log, TEXT("GAME OVER! Players Died"));
+
+	SetWaveState(EWaveState::GameOver);
+}
+
+void ASGameMode::SetWaveState(EWaveState NewState)
+{
+	ASGameState* GS = GetGameState<ASGameState>();
+	if (ensureAlways(GS))
+	{
+		GS->SetWaveState(NewState);
+	}
 
 }
 
@@ -77,6 +123,7 @@ void ASGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	CheckWaveState();
+	CheckAnyPlayerAlive();
 }
 
 void ASGameMode::SpawnBotTimerElapsed()
