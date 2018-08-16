@@ -28,6 +28,8 @@ protected:
 	UPROPERTY(ReplicatedUsing=OnRep_Health, BlueprintReadOnly,Category = "HealthComponents")
 	float Health;
 
+	bool bIsDead;
+
 	UFUNCTION()
 	void OnRep_Health(float OldHealth);
 
