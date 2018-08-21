@@ -56,6 +56,7 @@ protected:
 
 	void SetWaveState(EWaveState NewState);
 
+	void RestartDeadPlayer();
 public:
 
 	ASGameMode();
