@@ -68,9 +68,6 @@ protected:
 
 	void Fire();
 
-	void StartFire();
-
-	void StopFire();
 
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
@@ -87,4 +84,10 @@ public:
 
 	virtual FVector GetPawnViewLocation() const override;
 	
+
+	UFUNCTION(BlueprintCallable, Category = "Players")
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Players")
+	void StopFire();
 };
