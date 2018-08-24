@@ -100,6 +100,10 @@ protected:
 
 	float LastFireTime;
 
+	/* Bullet spread in Degrees */
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin=0.f))
+	float BulletSpread;
+
 protected:
 
 // 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Weapon")

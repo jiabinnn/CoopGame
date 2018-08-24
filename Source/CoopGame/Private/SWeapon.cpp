@@ -10,7 +10,8 @@
 #include "CoopGame.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "TimerManager.h"
-#include <UnrealNetwork.h>
+#include <UnrealNetwork.h> 
+
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
 	TEXT("COOP.DebugWeapons"), 
@@ -38,6 +39,7 @@ ASWeapon::ASWeapon()
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
 
+	BulletSpread = 1.f;
 	//TotalBulletsNum = 100;
 	//MagazineNum = 30;
 	//CurrentBulletsNum = MagazineNum;
@@ -75,7 +77,12 @@ void ASWeapon::Fire()
 		FVector EyeLocation;
 		FRotator EyeRotation;
 		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
 		FVector ShotDirection = EyeRotation.Vector();
+
+		float HalfRad = FMath::DegreesToRadians(BulletSpread);
+		ShotDirection = FMath::VRandCone(ShotDirection, HalfRad, HalfRad);
+
 
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(MyOwner);
@@ -83,7 +90,7 @@ void ASWeapon::Fire()
 		QueryParams.bTraceComplex = true;
 		QueryParams.bReturnPhysicalMaterial = true;
 
-		FVector EndPoint = EyeLocation + (EyeRotation.Vector() * 10000);
+		FVector EndPoint = EyeLocation + (ShotDirection * 10000);
 
 		FVector TracerEndPoint = EndPoint;
 
