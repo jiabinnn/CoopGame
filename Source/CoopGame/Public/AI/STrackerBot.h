@@ -85,11 +85,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	USoundCue* ExplosionSound;
 
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
-	
+	FTimerHandle TimerHandle_RefreshPath;
+
+	void RefreshPath();
+
 };
